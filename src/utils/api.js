@@ -3,24 +3,50 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 export const api = {
   // Contact APIs
   submitContact: async (contactData) => {
-    const response = await fetch(`${API_BASE_URL}/api/contact`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(contactData),
-    });
-    return response.json();
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   },
 
   getContacts: async () => {
-    const response = await fetch(`${API_BASE_URL}/api/contact`);
-    return response.json();
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contact`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   },
 
   // Health check
   healthCheck: async () => {
-    const response = await fetch(`${API_BASE_URL}/`);
-    return response.json();
+    try {
+      const response = await fetch(`${API_BASE_URL}/`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
 };

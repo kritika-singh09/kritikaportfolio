@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { api } from '../utils/api';
-import emailjs from '@emailjs/browser';
+import emailjs from 'emailjs-com';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -21,10 +21,10 @@ const Contact = () => {
       };
 
       await emailjs.send(
-        'YOUR_SERVICE_ID',
-        'YOUR_TEMPLATE_ID', 
+        'service_portfolio', // Service ID
+        'template_contact', // Template ID
         templateParams,
-        'YOUR_PUBLIC_KEY'
+        'user_public_key' // Public Key
       );
       
       return true;
@@ -44,44 +44,40 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    try {
-      const data = await api.submitContact(formData);
-      
-      if (data.success) {
-        alert('Message sent successfully!');
-        setFormData({ name: '', email: '', company: '', message: '' });
-      } else {
-        alert(data.message || 'Failed to send message');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      
-      // Send email directly to your 3 emails
-      const emailBody = `
-        New Contact Form Submission:
-        
-        Name: ${formData.name}
-        Email: ${formData.email}
-        Company: ${formData.company || 'Not specified'}
-        Message: ${formData.message}
-      `;
-      
-      // Create mailto links for 3 emails
-      const emails = [
-        'kritikasingh273017@gmail.com',
-        'singhaditya83189@gmail.com', 
-        'kritikasingh273017@gmail.com'
-      ];
-      
-      emails.forEach((email, index) => {
-        setTimeout(() => {
-          window.open(`mailto:${email}?subject=Portfolio Contact Form&body=${encodeURIComponent(emailBody)}`);
-        }, index * 500);
-      });
-      
-      alert('Backend server is not running. Opening email clients to send to 3 emails.');
+    // Use HTML form submission for FormSubmit
+    const form = document.createElement('form');
+    form.action = 'https://formsubmit.co/kritikasingh273017@gmail.com';
+    form.method = 'POST';
+    form.style.display = 'none';
+    
+    // Add form fields
+    const fields = {
+      name: formData.name,
+      email: formData.email,
+      company: formData.company || 'Not specified',
+      message: formData.message,
+      _subject: 'New Portfolio Contact Form Submission',
+      _captcha: 'false',
+      _template: 'table'
+    };
+    
+    Object.keys(fields).forEach(key => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = fields[key];
+      form.appendChild(input);
+    });
+    
+    document.body.appendChild(form);
+    form.submit();
+    
+    // Clean up and show success
+    setTimeout(() => {
+      document.body.removeChild(form);
+      alert('Message sent successfully!');
       setFormData({ name: '', email: '', company: '', message: '' });
-    }
+    }, 1000);
   };
 
   const contactInfo = [
